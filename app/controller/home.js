@@ -4,7 +4,8 @@ const Controller = require('egg').Controller;
 
 class HomeController extends Controller {
   async index() {
-    this.ctx.body = 'This is a google api test project. Powered by egg.js.';
+    // render a template, path relate to `app/view`
+    await this.ctx.render('home/index.tpl');
   }
 }
 
