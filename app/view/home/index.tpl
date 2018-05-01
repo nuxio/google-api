@@ -57,6 +57,7 @@
         loaded: 0,
         total: 0,
         percent: 0,
+        key: '',
         src: '',
         err: '',
         observer: null,
@@ -97,6 +98,7 @@
         },
         complete(res) {
           this.src = `http://p1501d1m6.bkt.clouddn.com/${res.key}`;
+          this.key = res.key;
           this.percent = 0;
           this.uploading = false;
           this.fuckGoogle();
@@ -110,25 +112,11 @@
           this.$refs.file.value = '';
         },
         fuckGoogle() {
-          const data = {
-            image: {
-              source: {
-                imageUri: this.src,
-              },
-            },
-            features: {
-              type: 'LABEL_DETECTION'
-            },
-          };
-          const url = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyCLCJfd5AKZdEmKNoFurBtzx-PI0kV17c0';
-
-          postData(url, data)
+          fetch(`/google/label-detection?key=${this.key}`)
+            .then(res => res.json())
             .then(res => {
-              this.result = JSON.stringify(res);
+              console.log(res);
             })
-            .catch(err => {
-              this.result = JSON.stringify(err);
-            });
         },
       },
     });

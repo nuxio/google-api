@@ -9,5 +9,7 @@ module.exports = app => {
 
   router.get('/google', controller.google.index);
 
+  router.get('/google/label-detection', controller.google.labelDetection);
+
   router.get('/upload/token', controller.upload.token);
 };
