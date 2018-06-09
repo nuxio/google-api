@@ -10,11 +10,11 @@ class UserController extends Controller {
 
   async login() {
     const { APP_ID, SECRET } = this.app.config.miniProgram;
-    const { code } = this.ctx.req.body;
+    const { code } = this.ctx.query;
     const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${APP_ID}&secret=${SECRET}&js_code=${code}&grant_type=authorization_code`;
     const reuslt = await this.ctx.curl(url);
 
-    this.ctx.body = reuslt;
+    this.ctx.body = reuslt.data;
   }
 
   async register() {
