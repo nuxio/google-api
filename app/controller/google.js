@@ -1,7 +1,8 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-const vision = require('@google-cloud/vision');
+const Vision = require('@google-cloud/vision');
+const Translate = require('@google-cloud/translate');
 
 class GoogleController extends Controller {
   async index() {
@@ -20,11 +21,24 @@ class GoogleController extends Controller {
     }
 
     const { BASE_URL } = this.app.config.upload;
-    // Creates a client
-    const client = new vision.ImageAnnotatorClient();
-    const result = await client.labelDetection(BASE_URL + key);
+    const visionClient = new Vision.ImageAnnotatorClient();
+    const result = await visionClient.labelDetection(BASE_URL + key);
+    const labels = result.labelAnnotations.map(item => {
+      const { description, score } = item;
 
-    ctx.body = result;
+      return {
+        description,
+        score: Math.round(score * 1000) / 10,
+      };
+    });
+    const translateClient = new Translate();
+    const translations = await translateClient.translate(labels.map(label => label.description).join(','), 'zh-CN');
+
+    ctx.body = {
+      code: 0,
+      labels,
+      translations,
+    };
   }
 }
 
