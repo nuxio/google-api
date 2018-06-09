@@ -19,7 +19,7 @@ module.exports = app => {
 
   router.get('/user', controller.user.index);
 
-  router.post('/user/login', controller.user.login);
+  router.get('/user/login', controller.user.login);
 
   router.post('/user/register', controller.user.register);
 };
