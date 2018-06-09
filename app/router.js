@@ -11,5 +11,9 @@ module.exports = app => {
 
   router.get('/google/label-detection', controller.google.labelDetection);
 
+  router.get('/upload', controller.upload.index);
+
+  router.post('/upload/upload', controller.upload.upload);
+
   router.get('/upload/token', controller.upload.token);
 };

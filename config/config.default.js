@@ -1,5 +1,7 @@
 'use strict';
 
+const path = require('path');
+
 const BASE_URL = '';
 const ACCESS_KEY = '';
 const SECRET_KEY = '';
@@ -18,6 +20,9 @@ module.exports = appInfo => {
 
   // add your config here
   config.middleware = [];
+
+  config.baseDir = path.resolve(__dirname, '../');
+  config.baseUrl = 'https://mafeewu.com/';
 
   // upload config
   config.upload = {
