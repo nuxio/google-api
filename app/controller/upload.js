@@ -33,6 +33,7 @@ class UploadController extends Controller {
     const md5 = await md5File(file.path);
 
     const existFile = await FileModel.findFileByMd5(md5);
+    existFile.labels = JSON.parse(existFile.labels);
 
     if (existFile) {
       ctx.body = {
@@ -53,7 +54,7 @@ class UploadController extends Controller {
     }
     const url = `${this.app.config.baseUrl}public/upload/${fileName}`;
 
-    await FileModel.newFile({
+    const savedFile = await FileModel.newFile({
       md5,
       name: fileName,
       size: file.size,
@@ -62,7 +63,7 @@ class UploadController extends Controller {
 
     ctx.body = {
       exist: 0,
-      url,
+      file: savedFile,
     };
   }
 

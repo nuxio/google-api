@@ -4,6 +4,8 @@ const Controller = require('egg').Controller;
 const Vision = require('@google-cloud/vision');
 const Translate = require('@google-cloud/translate');
 
+const FileModel = require('../service/File');
+
 class GoogleController extends Controller {
   async index() {
     this.ctx.body = 'Google ctx';
@@ -11,7 +13,7 @@ class GoogleController extends Controller {
 
   async labelDetection() {
     const ctx = this.ctx;
-    const { key } = ctx.query;
+    const { key, md5 } = ctx.query;
     if (!key) {
       ctx.body = {
         error: 'key is required!',
@@ -48,6 +50,8 @@ class GoogleController extends Controller {
         score: label.score,
       };
     });
+
+    await FileModel.updateLabelByMd5(md5, labels);
 
     ctx.body = { labels };
   }

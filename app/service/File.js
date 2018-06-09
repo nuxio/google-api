@@ -20,7 +20,7 @@ const FileSchema = new Schema({
     type: String,
   },
   createTime: {
-    type: String,
+    type: Number,
   },
   creatorOpenId: {
     type: String,
