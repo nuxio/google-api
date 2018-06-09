@@ -20,6 +20,7 @@ class GoogleController extends Controller {
       return;
     }
 
+    // annotation
     const { BASE_URL } = this.app.config.upload;
     const visionClient = new Vision.ImageAnnotatorClient();
     let labels = await visionClient.labelDetection(BASE_URL + key);
@@ -31,28 +32,24 @@ class GoogleController extends Controller {
         score: Math.round(score * 1000) / 10,
       };
     });
-    
-    const translateClient = new Translate();
-    let translations = ''
-    try {
-      translations = await translateClient.translate(labels.map(label => label.description).join('$'), 'zh-CN');
-    } catch (e) {
-      ctx.logger.error(e);
-    }
 
+    // translate
+    const translateClient = new Translate();
+    let translations = await translateClient.translate(
+      labels.map(label => label.description).join('$'),
+      'zh-CN'
+    );
     translations = translations[0].split('$');
 
+    // combine
     labels = labels.map((label, index) => {
       return {
         description: translations[index],
         score: label.score,
-      }
+      };
     });
 
-    ctx.body = {
-      code: 0,
-      labels,
-    };
+    ctx.body = { labels };
   }
 }
 
