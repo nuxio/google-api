@@ -22,8 +22,8 @@ class GoogleController extends Controller {
 
     const { BASE_URL } = this.app.config.upload;
     const visionClient = new Vision.ImageAnnotatorClient();
-    const result = await visionClient.labelDetection(BASE_URL + key);
-    const labels = result.labelAnnotations.map(item => {
+    let labels = await visionClient.labelDetection(BASE_URL + key);
+    labels = labels[0].labelAnnotations.map(item => {
       const { description, score } = item;
 
       return {
@@ -31,13 +31,27 @@ class GoogleController extends Controller {
         score: Math.round(score * 1000) / 10,
       };
     });
+    
     const translateClient = new Translate();
-    const translations = await translateClient.translate(labels.map(label => label.description).join(','), 'zh-CN');
+    let translations = ''
+    try {
+      translations = await translateClient.translate(labels.map(label => label.description).join('$'), 'zh-CN');
+    } catch (e) {
+      ctx.logger.error(e);
+    }
+
+    translations = translations[0].split('$');
+
+    labels = labels.map((label, index) => {
+      return {
+        description: translations[index],
+        score: label.score,
+      }
+    });
 
     ctx.body = {
       code: 0,
       labels,
-      translations,
     };
   }
 }

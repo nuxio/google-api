@@ -1,9 +1,9 @@
 'use strict';
 
-const BASE_URL = '';
-const ACCESS_KEY = '';
-const SECRET_KEY = '';
-const BUCKET = '';
+const BASE_URL = 'http://p1501d1m6.bkt.clouddn.com/';
+const ACCESS_KEY = '9Ko2RJqB3DEUZEIurrxo9X6AFjOMzJqrtAA97uXZ';
+const SECRET_KEY = 'Z8wyiwCMekV8hF9ch7GylbYb1667oZCA0Tkrqf1d';
+const BUCKET = 'lwer';
 
 module.exports = appInfo => {
   const config = exports = {};
@@ -25,6 +25,10 @@ module.exports = appInfo => {
     ACCESS_KEY,
     SECRET_KEY,
     BUCKET,
+  };
+
+  config.logger = {
+    dir: '/home/logs/google-api',
   };
 
   return config;
