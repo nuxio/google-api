@@ -7,6 +7,9 @@ const ACCESS_KEY = '';
 const SECRET_KEY = '';
 const BUCKET = '';
 
+const APP_ID = '';
+const SECRET = '';
+
 module.exports = appInfo => {
   const config = exports = {};
 
@@ -30,6 +33,11 @@ module.exports = appInfo => {
     ACCESS_KEY,
     SECRET_KEY,
     BUCKET,
+  };
+
+  config.miniProgram = {
+    APP_ID,
+    SECRET,
   };
 
   config.logger = {
