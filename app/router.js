@@ -16,4 +16,8 @@ module.exports = app => {
   router.post('/upload/upload', controller.upload.upload);
 
   router.get('/upload/token', controller.upload.token);
+
+  router.get('/user', controller.user.index);
+
+  router.post('/user/register', controller.user.register);
 };

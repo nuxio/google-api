@@ -20,17 +20,6 @@
   </form>
 </fieldset>
 
-<fieldset style="margin: 20px; padding: 20px;">
-  <legend>多文件，Ajax</legend>
-  <form id="form4">
-    <div>
-      <input type="file" class="file" multiple />
-    </div>
-    <div>
-      <input type="submit" value="上传" />
-    </div>
-  </form>
-</fieldset>
 <script>
   $(function () {
     const _csrf = "{{ ctx.csrf | safe }}";
@@ -43,8 +32,7 @@
         formData.append('file' + index, key);
         index++
       }
-      formData.append('isAjax', 'yes');
-      formData.append('customName', $(this).find('#customName').val() || '');
+      formData.append('openId', 'wuqiang');
       $.ajax({
         url: '/upload/upload?_csrf=' + _csrf,
         data: formData,

@@ -11,9 +11,9 @@ class GoogleController extends Controller {
 
   async labelDetection() {
     const ctx = this.ctx;
-    const { key } = this.ctx.query;
+    const { key } = ctx.query;
     if (!key) {
-      this.ctx.body = {
+      ctx.body = {
         error: 'key is required!',
       };
 

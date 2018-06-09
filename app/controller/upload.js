@@ -5,13 +5,14 @@ const path = require('path');
 const awaitWriteStream = require('await-stream-ready').write;
 const sendToWormhole = require('stream-wormhole');
 const formidable = require('formidable');
+const md5File = require('md5-file/promise');
 
 const Controller = require('egg').Controller;
 const Qiniu = require('qiniu');
+const FileModel = require('../service/File');
 
 class UploadController extends Controller {
   async index() {
-    // render a template, path relate to `app/view`
     await this.ctx.render('upload/index.tpl');
   }
 
@@ -25,30 +26,43 @@ class UploadController extends Controller {
   }
 
   async upload() {
-    const { ctx, logger } = this;
-    const extraParams = await this.parse(ctx.req);
-    const { multipleFile, customName } = extraParams && extraParams.fields;
-    logger.info(multipleFile, customName);
-    const urls = [];
-    for (const key in extraParams.files) {
-      const file = extraParams.files[key];
-      logger.info('file.name', file.name);
-      logger.info('customName', customName);
-      const stream = fs.createReadStream(file.path);
-      const fileName = customName ? (customName + path.extname(file.name)) : file.name;
-      const target = path.join(this.app.config.baseDir, 'app/public/upload', fileName);
-      const writeStream = fs.createWriteStream(target);
-      try {
-        await awaitWriteStream(stream.pipe(writeStream));
-      } catch (err) {
-        await sendToWormhole(stream);
-        throw err;
-      }
-      urls.push(`${this.app.config.baseUrl}public/upload/${fileName}`);
+    const { ctx } = this;
+    const { files, fields } = await this.parse(ctx.req);
+    const file = files[Object.keys(files)[0]];
+    const stream = fs.createReadStream(file.path);
+    const md5 = await md5File(file.path);
+
+    const existFile = await FileModel.findFileByMd5(md5);
+
+    if (existFile) {
+      ctx.body = {
+        exist: 1,
+        file: existFile,
+      };
+      return;
     }
 
-    this.ctx.body = {
-      urls,
+    const fileName = file.name;
+    const target = path.join(this.app.config.baseDir, 'app/public/upload', fileName);
+    const writeStream = fs.createWriteStream(target);
+    try {
+      await awaitWriteStream(stream.pipe(writeStream));
+    } catch (err) {
+      await sendToWormhole(stream);
+      throw err;
+    }
+    const url = `${this.app.config.baseUrl}public/upload/${fileName}`;
+
+    await FileModel.newFile({
+      md5,
+      name: fileName,
+      size: file.size,
+      url,
+    }, fields.openId);
+
+    ctx.body = {
+      exist: 0,
+      url,
     };
   }
 
