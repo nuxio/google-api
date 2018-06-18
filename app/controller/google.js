@@ -13,19 +13,17 @@ class GoogleController extends Controller {
 
   async labelDetection() {
     const ctx = this.ctx;
-    const { key, md5 } = ctx.query;
-    if (!key) {
+    const { url, md5 } = ctx.query;
+    if (!url) {
       ctx.body = {
-        error: 'key is required!',
+        error: 'url is required!',
       };
 
       return;
     }
 
-    // annotation
-    const { BASE_URL } = this.app.config.upload;
     const visionClient = new Vision.ImageAnnotatorClient();
-    let labels = await visionClient.labelDetection(BASE_URL + key);
+    let labels = await visionClient.labelDetection(url);
     labels = labels[0].labelAnnotations.map(item => {
       const { description, score } = item;
 
